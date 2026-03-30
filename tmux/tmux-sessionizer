@@ -70,7 +70,7 @@ while [[ "$#" -gt 0 ]]; do
 done
 
 if [[ -z "${TS_SEARCH_PATHS+x}" ]]; then
-  TS_SEARCH_PATHS=(~/dev/work ~/dev/personal ~/ ~/.config)
+  TS_SEARCH_PATHS=(~/dev:4 ~/.config)
 fi
 
 if [[ "$list_search_paths_override" == "true" ]]; then
@@ -78,6 +78,18 @@ if [[ "$list_search_paths_override" == "true" ]]; then
 elif [[ ${#TS_EXTRA_SEARCH_PATHS[@]} -gt 0 ]]; then
   TS_SEARCH_PATHS+=("${TS_EXTRA_SEARCH_PATHS[@]}")
 fi
+
+expand_home_prefix() {
+  local path="$1"
+
+  if [[ "$path" == "~" ]]; then
+    printf '%s' "$HOME"
+  elif [[ "$path" == "~/"* ]]; then
+    printf '%s/%s' "$HOME" "${path#~/}"
+  else
+    printf '%s' "$path"
+  fi
+}
 
 switch_to() {
   if [[ -z $TMUX ]]; then
@@ -112,6 +124,8 @@ find_dirs() {
       path="$entry"
     fi
 
+    path=$(expand_home_prefix "$path")
+
     [[ -d "$path" ]] && find "$path" -mindepth 1 -maxdepth "${depth:-${TS_MAX_DEPTH:-1}}" -path '*/.git' -prune -o -type d -print
   done
 }
@@ -123,6 +137,8 @@ canonical_path() {
     printf ''
     return
   fi
+
+  path=$(expand_home_prefix "$path")
 
   if [[ -d "$path" ]]; then
     (cd "$path" 2>/dev/null && pwd -P) || printf '%s' "$path"
@@ -218,7 +234,7 @@ load_window_commands_for_path() {
   local config_file
   local had_existing_window_commands="false"
   local -a previous_window_commands=()
-  local -a commands=("nvim" "opencode" "" "")
+  local -a commands=("opencode" "" "")
 
   if declare -p TS_WINDOW_COMMANDS >/dev/null 2>&1; then
     had_existing_window_commands="true"
@@ -256,7 +272,7 @@ setup_session_windows() {
   load_window_commands_for_path "$session_path"
 
   if [[ ${#SESSION_WINDOW_COMMANDS[@]} -eq 0 ]]; then
-    SESSION_WINDOW_COMMANDS=("nvim" "opencode" "" "")
+    SESSION_WINDOW_COMMANDS=("opencode" "" "")
   fi
 
   command="${SESSION_WINDOW_COMMANDS[0]}"
