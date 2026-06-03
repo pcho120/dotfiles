@@ -19,13 +19,13 @@ sudo pacman -S --noconfirm --needed curl git
 Recommended:
 
 ```bash
-bash -c "$(curl -fsSL https://raw.githubusercontent.com/ibanks42/dotfiles/main/install.sh)"
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/pcho120/dotfiles/main/install.sh)"
 ```
 
 Or with `wget`:
 
 ```bash
-bash -c "$(wget -qO- https://raw.githubusercontent.com/ibanks42/dotfiles/main/install.sh)"
+bash -c "$(wget -qO- https://raw.githubusercontent.com/pcho120/dotfiles/main/install.sh)"
 ```
 
 If you already cloned the repo locally:
